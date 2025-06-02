@@ -1,13 +1,13 @@
 import React from 'react'
 import Image from 'next/image';
 
-function FloatingImageCard({imageUrl, alt, top, left}: {imageUrl: string, alt: string, top: number, left: number}) {
+function FloatingImageCard({imageUrl, alt, top, left, animationDuration}: {imageUrl: string, alt: string, top: number, left: number, animationDuration: number}) {
   if (!imageUrl) {
     return null;
   }
   return (
     <div className="absolute float-animate w-[100px] h-[100px] rounded-full"
-    style={{ top: `${top}px`, left: `${left}px` }}>
+    style={{ top: `${top}%`, left: `${left}%`, animationDelay: `${Math.random() * 5}s`, animationDuration: `${animationDuration}s` }}>
         {/* Blurred halo */}
         <Image
           src={imageUrl}
