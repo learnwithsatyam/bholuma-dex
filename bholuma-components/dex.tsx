@@ -2,9 +2,11 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SolanaTokenInterface } from '@/interfaces/solanaTokenInterface'
+import TokenSelector from '@/bholuma-components/token-selector'
 import React from 'react'
 
-function Dex() {
+function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
     return (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <h1 className="text-4xl font-bold text-center text-white mb-4">Welcome to <br /> Bholuma Dex</h1>
@@ -25,9 +27,7 @@ function Dex() {
                                     e.target.value = ''; // reset input if invalid
                                 }
                             }} />
-                        <Button className="bg-pink-600 hover:bg-pink-700 text-white font-bold px-4 rounded-md ml-2">
-                            Select Token
-                        </Button>
+                        <TokenSelector tokens={tokens ?? []} />
                     </div>
                     <Label className="text-slate-500 text-left text-sm w-full">
                         $0.00
@@ -37,17 +37,20 @@ function Dex() {
                     <Label className="text-slate-500 text-left text-sm w-full">
                         BUY
                     </Label>
-                    <Input type="text" placeholder="0" className='[&&]:text-4xl px-0 [&&]:h-fit [&&]:!border-none [&&]:!outline-none [&&]:!ring-0 [&&]:!focus-visible:ring-0 [&&]:!focus-visible:border-none [&&]:!focus-visible:outline-none'
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        onChange={(e) => {
-                            const val = e.target.value;
-                            if (/^\d*$/.test(val)) {
-                                //setSolAmount(Number(val)); // only set state if it's an integer or empty
-                            } else {
-                                e.target.value = ''; // reset input if invalid
-                            }
-                        }} />
+                    <div className='flex items-center rounded-md w-full'>
+                        <Input type="text" placeholder="0" className='[&&]:text-4xl px-0 [&&]:h-fit [&&]:!border-none [&&]:!outline-none [&&]:!ring-0 [&&]:!focus-visible:ring-0 [&&]:!focus-visible:border-none [&&]:!focus-visible:outline-none'
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (/^\d*$/.test(val)) {
+                                    //setSolAmount(Number(val)); // only set state if it's an integer or empty
+                                } else {
+                                    e.target.value = ''; // reset input if invalid
+                                }
+                            }} />
+                        <TokenSelector tokens={tokens ?? []} />
+                    </div>
                     <Label className="text-slate-500 text-left text-sm w-full">
                         $0.00
                     </Label>
