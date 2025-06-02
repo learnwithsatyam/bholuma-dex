@@ -13,7 +13,7 @@ function FloatingImageCard({imageUrl, alt, top, left, animationDuration, width, 
           src={imageUrl}
           fill
           alt={alt}
-          className="absolute opacity-90 rounded-full z-0 rotate-left-right"
+          className="absolute rounded-full z-0 rotate-left-right"
           style={{ filter: `blur(${blur ?? 20}px)`}}
         />
         {/* Actual sharp icon */}
