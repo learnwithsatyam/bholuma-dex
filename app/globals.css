@@ -130,3 +130,16 @@
   animation: floatUpDown 2s ease-in-out infinite;
 }
 
+@keyframes rotateLeftRight {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(40deg);
+  }
+}
+
+.rotate-left-right {
+  animation: rotateLeftRight 10s ease-in-out infinite;
+}
+
