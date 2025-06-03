@@ -43,9 +43,9 @@ function TokenSelector({tokens}: {tokens: SolanaTokenInterface[]}) {
           <CommandList>
             <CommandEmpty>No token found.</CommandEmpty>
             <CommandGroup>
-              {tokens.map((token) => (
+              {tokens.slice(0,50).map((token) => (
                 <CommandItem
-                  key={token.name}
+                  key={token.address}
                   value={token.name}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue)

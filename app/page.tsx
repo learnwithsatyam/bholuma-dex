@@ -1,9 +1,26 @@
+"use client"
 import Dex from "@/bholuma-components/dex";
 import FloatingImageCard from "@/bholuma-components/floating-image-card";
 import Navbar from "@/bholuma-components/navbar";
+import getAllTokens from "@/bl/getAllTokens";
+import { SolanaTokenInterface } from "@/interfaces/solanaTokenInterface";
+import { get } from "http";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+
+  const [tokens, setTokens] = useState<SolanaTokenInterface[]>([]);
+
+  useEffect(() => {
+    fetchTokens();
+  }, []);
+
+  const fetchTokens = async () => {
+    const allTokens = await getAllTokens();
+    setTokens(allTokens);
+  };
+
   return (
     <div className=" relative bg-zinc-900 grid grid-rows-[100vh_1fr_auto] items-center justify-items-center font-[family-name:var(--font-geist-sans)]">
       <div className=" relative w-full h-screen overflow-hidden">
@@ -34,7 +51,7 @@ export default function Home() {
       // USDT
       <FloatingImageCard imageUrl="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/D3KdBta3p53RV5FoahnJM5tP45h6Fd3AyFYgXTJvGCaK/logo.svg" alt="Metamask Disk" blur={20} width={100} top={90} left={40} animationDuration={8}/> 
       
-      <Dex />
+      <Dex tokens={tokens} />
 
       </div>
     </div>
