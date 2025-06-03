@@ -4,19 +4,62 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SolanaTokenInterface } from '@/interfaces/solanaTokenInterface'
 import TokenSelector from '@/bholuma-components/token-selector'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { RootState } from '@/store/index'
 import { useSelector, useDispatch } from 'react-redux'
-import { setBuyTokenAddress, setSellTokenAddress, setBuyTokenPrice, setSellTokenPrice } from '@/store/BuyAndSellTokenSlice'
+import getQuote from "@/bl/getQuote";
+import { setBuyTokenAddress, setSellTokenAddress, setBuyTokenPrice, setSellTokenPrice, setBuyTokenAmount, setSellTokenAmount } from '@/store/BuyAndSellTokenSlice'
+import { jupiterQuoteParamsInterface } from '@/interfaces/jupiterQuoteParamInterface'
+import { SUPPORTED_TOKENS } from '@/constants/supported-token'
+import { jupiterQuoteInterface } from '@/interfaces/jupiterQuoteInterface'
+import { Root } from 'react-dom/client'
+import getTokenPrice from '@/bl/getTokenPrice'
 
 function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
 
     const sellTokenPrice = useSelector((state: RootState) => state.buyAndSellToken.sellTokenPrice);
     const sellTokenAddress = useSelector((state: RootState) => state.buyAndSellToken.sellTokenAddress);
+    const sellTokenAmount = useSelector((state: RootState) => state.buyAndSellToken.sellTokenAmount);
     const buyTokenPrice = useSelector((state: RootState) => state.buyAndSellToken.buyTokenPrice);
     const buyTokenAddress = useSelector((state: RootState) => state.buyAndSellToken.buyTokenAddress);
+    const buyTokenAmount = useSelector((state: RootState) => state.buyAndSellToken.buyTokenAmount);
+
+    const sellToken = SUPPORTED_TOKENS.find((token) => token.address == sellTokenAddress);
+    const buyToken = SUPPORTED_TOKENS.find((token) => token.address == buyTokenAddress);
+
+    const [currentQuote, setCurrentQuote] = useState<jupiterQuoteInterface>()
+    
+    const getCurrentQuote = async () => {
+        if(sellTokenAmount <= 0 || !sellTokenAddress || !buyTokenAddress) return;
+        
+        const params: jupiterQuoteParamsInterface = {
+            inputMint: sellTokenAddress,
+            outputMint: buyTokenAddress, 
+            amount: String(Math.pow(10, sellToken?.decimals!)*sellTokenAmount),
+            slippageBps: 50,
+            swapMode: 'ExactIn'
+        }
+        const quote = await getQuote(params);
+        setCurrentQuote(quote);
+        dispatch(setBuyTokenAmount((Number(currentQuote?.outAmount ?? 0) / Math.pow(10, buyToken?.decimals ?? 0)) || ""));
+        dispatch(setBuyTokenPrice(await getTokenPrice(buyTokenAddress)));
+        dispatch(setSellTokenPrice(await getTokenPrice(sellTokenAddress)))
+    }
+
+    const changeSellTokenAddress = (address: string) => {
+        dispatch(setSellTokenAddress(address));
+    }
+
+    const changeBuyTokenAddress = (address: string) => {
+        dispatch(setBuyTokenAddress(address));
+    }
+
+    useEffect(() => {
+        getCurrentQuote(); // Clean up on unmount
+    }, [sellTokenAmount]);
 
     const dispatch = useDispatch();
+
     return (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <h1 className="text-4xl font-bold text-center text-white mb-4">Welcome to <br /> Bholuma Dex</h1>
@@ -32,15 +75,15 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                             onChange={(e) => {
                                 const val = e.target.value;
                                 if (/^\d*$/.test(val)) {
-                                    dispatch(setBuyTokenPrice(Number(val))); // only set state if it's an integer or empty
+                                    dispatch(setSellTokenAmount(Number(val))); // only set state if it's an integer or empty
                                 } else {
                                     e.target.value = ''; // reset input if invalid
                                 }
                             }} />
-                        <TokenSelector tokens={tokens ?? []}  />
+                        <TokenSelector tokens={tokens ?? []} address={sellTokenAddress} setAddress={changeSellTokenAddress} />
                     </div>
                     <Label className="text-slate-500 text-left text-sm w-full">
-                        $0.00
+                        ${sellTokenPrice}
                     </Label>
                 </div>
                 <div className='grid grid-rows-[auto_1fr_auto] items-center justify-items-center px-2 py-2 bg-gray-800 rounded-md space-y-4 min-h-30 min-w-120'>
@@ -51,12 +94,12 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                         <Input type="text" disabled placeholder="0" className='[&&]:text-4xl px-0 [&&]:h-fit [&&]:!border-none [&&]:!outline-none [&&]:!ring-0 [&&]:!focus-visible:ring-0 [&&]:!focus-visible:border-none [&&]:!focus-visible:outline-none'
                             inputMode="numeric"
                             pattern="[0-9]*"
-                            value={sellTokenPrice}
-                         />
-                        <TokenSelector tokens={tokens ?? []} />
+                            value={buyTokenAmount}
+                        />
+                        <TokenSelector tokens={tokens ?? []} address={buyTokenAddress} setAddress={changeBuyTokenAddress} />
                     </div>
                     <Label className="text-slate-500 text-left text-sm w-full">
-                        $0.00
+                        ${ buyTokenPrice }
                     </Label>
                 </div>
                 <Button className="bg-pink-600 hover:bg-pink-700 text-white w-full font-bold py-2 px-4 rounded-md p-6">

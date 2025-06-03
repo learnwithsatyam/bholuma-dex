@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/popover"
 import { SolanaTokenInterface } from "@/interfaces/solanaTokenInterface"
 
-function TokenSelector({ tokens }: { tokens: SolanaTokenInterface[] }) {
+function TokenSelector({ tokens, address, setAddress }: { tokens: SolanaTokenInterface[], address: string, setAddress: (address: string) => void}) {
     const [open, setOpen] = React.useState(false)
-    const [value, setValue] = React.useState("")
+    const [value, setValue] = React.useState("");
     return (
         <div className="dark">
             <Popover open={open} onOpenChange={setOpen}>
@@ -57,10 +57,11 @@ function TokenSelector({ tokens }: { tokens: SolanaTokenInterface[] }) {
                             <CommandGroup>
                                 {tokens.map((token, index) => (
                                     <CommandItem
-                                        key={token.address || `token-${index}`}
+                                        key={token.address!}
                                         value={token.name}
                                         onSelect={(currentValue) => {
                                             setValue(currentValue === value ? "" : currentValue)
+                                            setAddress(token.address)
                                             setOpen(false)
                                         }}
                                     >
