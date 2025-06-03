@@ -3,6 +3,7 @@ import Dex from "@/bholuma-components/dex";
 import FloatingImageCard from "@/bholuma-components/floating-image-card";
 import Navbar from "@/bholuma-components/navbar";
 import getAllTokens from "@/bl/getAllTokens";
+import { SUPPORTED_TOKENS } from "@/constants/supported-token";
 import { SolanaTokenInterface } from "@/interfaces/solanaTokenInterface";
 import { get } from "http";
 import Image from "next/image";
@@ -10,10 +11,10 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
 
-  const [tokens, setTokens] = useState<SolanaTokenInterface[]>([]);
+  const [tokens, setTokens] = useState<SolanaTokenInterface[]>(SUPPORTED_TOKENS);
 
   useEffect(() => {
-    fetchTokens();
+    //fetchTokens();
   }, []);
 
   const fetchTokens = async () => {

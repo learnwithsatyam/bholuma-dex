@@ -27,7 +27,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                                     e.target.value = ''; // reset input if invalid
                                 }
                             }} />
-                        <TokenSelector tokens={tokens ?? []} />
+                        <TokenSelector tokens={tokens ?? []}  />
                     </div>
                     <Label className="text-slate-500 text-left text-sm w-full">
                         $0.00
