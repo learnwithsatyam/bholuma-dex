@@ -20,7 +20,7 @@ export const SUPPORTED_TOKENS: SolanaTokenInterface[] = [
     tags: ["stablecoin"]
   },
   {
-    address: "Es9vMFrzaCERg8E6U6C5n9zJiY7bvA9nE2UnmkzQ2tZ7", // USDT
+    address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", // USDT
     chainId: 101,
     decimals: 6,
     name: "Tether USD",
