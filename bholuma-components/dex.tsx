@@ -30,7 +30,13 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
     const [currentQuote, setCurrentQuote] = useState<jupiterQuoteInterface>()
     
     const getCurrentQuote = async () => {
-        if(sellTokenAmount <= 0 || !sellTokenAddress || !buyTokenAddress) return;
+        if(sellTokenAmount < 1 ){
+            dispatch(setBuyTokenAmount(0));
+            dispatch(setSellTokenPrice(0));
+            dispatch(setBuyTokenPrice(0));
+            return;
+        }
+        if(!sellTokenAddress || !buyTokenAddress) return;
         
         const params: jupiterQuoteParamsInterface = {
             inputMint: sellTokenAddress,
@@ -41,9 +47,12 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
         }
         const quote = await getQuote(params);
         setCurrentQuote(quote);
-        dispatch(setBuyTokenAmount((Number(currentQuote?.outAmount ?? 0) / Math.pow(10, buyToken?.decimals ?? 0)) || ""));
-        dispatch(setBuyTokenPrice(await getTokenPrice(buyTokenAddress)));
-        dispatch(setSellTokenPrice(await getTokenPrice(sellTokenAddress)))
+        dispatch(setBuyTokenAmount((Number(quote?.outAmount ?? 0) / Math.pow(10, buyToken?.decimals ?? 0)) || ""));
+        
+        const buyTokenPriceData = await getTokenPrice(buyTokenAddress);
+        const sellTokenPriceData = await getTokenPrice(sellTokenAddress);
+        dispatch(setBuyTokenPrice(buyTokenPriceData?.data[buyTokenAddress].price));
+        dispatch(setSellTokenPrice(sellTokenPriceData?.data[sellTokenAddress].price))
     }
 
     const changeSellTokenAddress = (address: string) => {
@@ -74,7 +83,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                             pattern="[0-9]*"
                             onChange={(e) => {
                                 const val = e.target.value;
-                                if (/^\d*$/.test(val)) {
+                                if (/^\d*$/.test(val) || val == '') {
                                     dispatch(setSellTokenAmount(Number(val))); // only set state if it's an integer or empty
                                 } else {
                                     e.target.value = ''; // reset input if invalid
