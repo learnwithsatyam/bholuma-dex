@@ -30,7 +30,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
     const [currentQuote, setCurrentQuote] = useState<jupiterQuoteInterface>()
     
     const getCurrentQuote = async () => {
-        if(sellTokenAmount < 1 ){
+        if(sellTokenAmount < 1 || !sellTokenAmount ){
             dispatch(setBuyTokenAmount(0));
             dispatch(setSellTokenPrice(0));
             dispatch(setBuyTokenPrice(0));
@@ -47,12 +47,16 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
         }
         const quote = await getQuote(params);
         setCurrentQuote(quote);
-        dispatch(setBuyTokenAmount((Number(quote?.outAmount ?? 0) / Math.pow(10, buyToken?.decimals ?? 0)) || ""));
+        const updatedBuyTokenAmount = (Number(quote?.outAmount ?? 0) / Math.pow(10, buyToken?.decimals ?? 0)) || 0;
+        dispatch(setBuyTokenAmount(updatedBuyTokenAmount));
         
         const buyTokenPriceData = await getTokenPrice(buyTokenAddress);
         const sellTokenPriceData = await getTokenPrice(sellTokenAddress);
-        dispatch(setBuyTokenPrice(buyTokenPriceData?.data[buyTokenAddress].price));
-        dispatch(setSellTokenPrice(sellTokenPriceData?.data[sellTokenAddress].price))
+        const buyTokenPriceValue = Number(buyTokenPriceData?.data?.[buyTokenAddress]?.price) || 0;
+        const buyTokenAmountValue = Number(updatedBuyTokenAmount) || 0;
+        dispatch(setBuyTokenPrice(buyTokenPriceValue * buyTokenAmountValue));
+        const sellTokenPriceValue = Number(sellTokenPriceData?.data?.[sellTokenAddress]?.price) || 0;
+        dispatch(setSellTokenPrice(sellTokenPriceValue * sellTokenAmount));
     }
 
     const changeSellTokenAddress = (address: string) => {
@@ -65,7 +69,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
 
     useEffect(() => {
         getCurrentQuote(); // Clean up on unmount
-    }, [sellTokenAmount]);
+    }, [sellTokenAmount, sellTokenAddress, buyTokenAddress]);
 
     const dispatch = useDispatch();
 
@@ -83,7 +87,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                             pattern="[0-9]*"
                             onChange={(e) => {
                                 const val = e.target.value;
-                                if (/^\d*$/.test(val) || val == '') {
+                                if (/^\d*\.?\d*$/.test(val) || val == '') {
                                     dispatch(setSellTokenAmount(Number(val))); // only set state if it's an integer or empty
                                 } else {
                                     e.target.value = ''; // reset input if invalid
