@@ -12,7 +12,6 @@ import { setBuyTokenAddress, setSellTokenAddress, setBuyTokenPrice, setSellToken
 import { jupiterQuoteParamsInterface } from '@/interfaces/jupiterQuoteParamInterface'
 import { SUPPORTED_TOKENS } from '@/constants/supported-token'
 import { jupiterQuoteInterface } from '@/interfaces/jupiterQuoteInterface'
-import { Root } from 'react-dom/client'
 import getTokenPrice from '@/bl/getTokenPrice'
 
 function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
