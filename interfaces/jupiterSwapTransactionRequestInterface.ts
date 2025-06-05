@@ -16,7 +16,7 @@ export interface JupiterSwapTransactionRequestInterface {
             maxLamports: number;
             priorityLevel: 'medium' | 'high' | 'veryHigh';
         };
-        jitoTipLamports: number;
+        jitoTipLamports?: number;
     }
 
     asLegacyTransaction?: boolean; // Default: false
