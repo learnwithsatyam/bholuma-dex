@@ -1,13 +1,14 @@
 import { JupiterSwapTransactionRequestInterface } from "@/interfaces/jupiterSwapTransactionRequestInterface";
 import { jupiterSwapTransactionResponseInterface } from "@/interfaces/jupiterSwapTransactionResponseInterface";
+
 import axios from "axios";
 
 export async function createSwapTransaction(
   body: JupiterSwapTransactionRequestInterface
-): Promise<jupiterSwapTransactionResponseInterface | null> {
+): Promise<jupiterSwapTransactionResponseInterface | string> {
   try {
     const response = await axios.post<jupiterSwapTransactionResponseInterface>(
-      "https://lite-api.jup.ag/swap/v1",
+      "https://quote-api.jup.ag/v6/swap",
       body,
       {
         headers: {
@@ -17,8 +18,10 @@ export async function createSwapTransaction(
     );
 
     return response.data;
-  } catch (error: any) {
-    console.error("Jupiter Swap Transaction Error:",  error);
-    return null;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return "An unknown error occurred";
   }
 }
