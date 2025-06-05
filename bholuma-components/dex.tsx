@@ -13,6 +13,11 @@ import { jupiterQuoteParamsInterface } from '@/interfaces/jupiterQuoteParamInter
 import { SUPPORTED_TOKENS } from '@/constants/supported-token'
 import { jupiterQuoteInterface } from '@/interfaces/jupiterQuoteInterface'
 import getTokenPrice from '@/bl/getTokenPrice'
+import { useWallet } from '@solana/wallet-adapter-react'
+import ConnectWallet from '@/bholuma-components/WalletConnectButton'
+import { JupiterSwapTransactionRequestInterface } from '@/interfaces/jupiterSwapTransactionRequestInterface'
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js'
+import { createSwapTransaction } from '@/bl/swapTokens'
 
 function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
 
@@ -22,6 +27,8 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
     const buyTokenPrice = useSelector((state: RootState) => state.buyAndSellToken.buyTokenPrice);
     const buyTokenAddress = useSelector((state: RootState) => state.buyAndSellToken.buyTokenAddress);
     const buyTokenAmount = useSelector((state: RootState) => state.buyAndSellToken.buyTokenAmount);
+
+    const {publicKey, disconnect} = useWallet();
 
     const sellToken = SUPPORTED_TOKENS.find((token) => token.address == sellTokenAddress);
     const buyToken = SUPPORTED_TOKENS.find((token) => token.address == buyTokenAddress);
@@ -64,6 +71,26 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
 
     const changeBuyTokenAddress = (address: string) => {
         dispatch(setBuyTokenAddress(address));
+    }
+
+
+    const handleTokenSwap = async () =>{
+        const requestBody : JupiterSwapTransactionRequestInterface = {
+            userPublicKey: publicKey?.toBase58() as string,
+            quoteResponse : currentQuote!,
+            prioritizationFeeLamports: {
+                priorityLevelWithMaxLamports:{
+                    maxLamports: 0.001*LAMPORTS_PER_SOL,
+                    priorityLevel: "high"
+                },
+                jitoTipLamports: 0
+            },
+            dynamicComputeUnitLimit: true,
+            feeAccount: sellTokenAddress,
+            blockhashSlotsToExpiry: 20
+        }
+
+        const response = createSwapTransaction(requestBody);
     }
 
     useEffect(() => {
@@ -114,9 +141,18 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                         ${ buyTokenPrice }
                     </Label>
                 </div>
-                <Button className="bg-pink-600 hover:bg-pink-700 text-white w-full font-bold py-2 px-4 rounded-md p-6">
+                {publicKey ? 
+                <div className='flex items-center w-full space-x-2 px-2 justify-center'>
+                <Button className="bg-pink-600 hover:bg-pink-700 text-white w-1/2 font-bold py-2 px-4 rounded-md p-6" onClick={handleTokenSwap}>
                     Swap
                 </Button>
+                <Button className="bg-gray-600 hover:bg-gray-700 text-white w-1/2 font-bold py-2 px-4 rounded-md p-6" onClick={disconnect}>
+                    Disconnect
+                </Button>
+                </div>
+                :
+                <ConnectWallet />
+}
             </div>
         </div>
     )
