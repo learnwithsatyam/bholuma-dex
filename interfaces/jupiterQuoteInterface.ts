@@ -14,11 +14,11 @@ export interface SwapInfo {
   outAmount: string;
   feeAmount: string;
   feeMint: string;
-  percent: number;
 }
 
 export interface RoutePlanEntry {
   swapInfo: SwapInfo;
+  percent: number;
 }
 
 export interface jupiterQuoteInterface {
