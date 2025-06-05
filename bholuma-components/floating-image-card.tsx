@@ -43,7 +43,7 @@ function FloatingImageCard({
         src={imageUrl}
         fill
         alt={alt}
-        className="absolute rounded-full z-0 rotate-left-right"
+        className="absolute rounded-full z-0 rotate-left-right glow"
         style={{ filter: `blur(${blur}px)` }}
         loading="lazy"
       />
@@ -52,7 +52,7 @@ function FloatingImageCard({
         src={imageUrl}
         fill
         alt={alt}
-        className="rotate-left-right rounded-full opacity-0 hover:scale-110 hover:opacity-100 -rotate-10 hover:rotate-0 transition-all duration-300 ease-in-out"
+        className="rotate-left-right rounded-full opacity-20 blur-xs hover:blur-none hover:scale-110 hover:opacity-100 -rotate-10 hover:rotate-0 transition-all duration-300 ease-in-out"
         loading="lazy"
       />
     </div>

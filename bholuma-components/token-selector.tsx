@@ -29,7 +29,7 @@ function TokenSelector({ tokens, address, setAddress }: { tokens: SolanaTokenInt
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-[200px] justify-between"
+                        className="w-[200px] justify-between text-lg"
                     >
                         {value &&
                             <img
