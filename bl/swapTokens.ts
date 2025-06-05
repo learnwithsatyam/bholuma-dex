@@ -1,29 +1,24 @@
-import { JupiterSwapTransactionRequestInterface } from "@/interfaces/jupiterSwapTransactionRequestInterface"
+import { JupiterSwapTransactionRequestInterface } from "@/interfaces/jupiterSwapTransactionRequestInterface";
+import { jupiterSwapTransactionResponseInterface } from "@/interfaces/jupiterSwapTransactionResponseInterface";
+import axios from "axios";
 
 export async function createSwapTransaction(
   body: JupiterSwapTransactionRequestInterface
-): Promise<Uint8Array | null> {
+): Promise<jupiterSwapTransactionResponseInterface | null> {
   try {
-    const response = await fetch('https://lite-api.jup.ag/swap/v1', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
+    const response = await axios.post<jupiterSwapTransactionResponseInterface>(
+      "https://lite-api.jup.ag/swap/v1",
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Swap request failed: ${error}`)
-    }
-
-    const result = await response.json()
-
-    // result.swapTransaction is base64 encoded transaction
-    const transactionBase64 = result.swapTransaction as string
-    return Uint8Array.from(Buffer.from(transactionBase64, 'base64'))
-  } catch (error) {
-    console.error('Jupiter Swap Transaction Error:', error)
-    return null
+    return response.data;
+  } catch (error: any) {
+    console.error("Jupiter Swap Transaction Error:",  error);
+    return null;
   }
 }
