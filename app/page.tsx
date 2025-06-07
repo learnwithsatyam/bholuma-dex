@@ -8,8 +8,27 @@ import { SolanaTokenInterface } from "@/interfaces/solanaTokenInterface";
 import { get } from "http";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Home() {
+
+  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_NODE_ENV === "production") {
+  const originalConsoleError = console.error;
+
+  console.error = (...args) => {
+    const isWalletReject =
+      args[0] instanceof Error &&
+      (args[0].name === "WalletConnectionError" || args[0].name === "WalletDisconnectionError") ||
+      args[0].message === "User rejected the request.";
+
+    if (isWalletReject) {
+      if (!args[0]?.message)toast.error(`Could not connect to wallet.`); // cleaner log
+      return;
+    }
+
+    originalConsoleError(...args);
+  };
+}
 
   const [tokens, setTokens] = useState<SolanaTokenInterface[]>(SUPPORTED_TOKENS);
 
