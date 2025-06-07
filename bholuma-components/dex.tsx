@@ -43,7 +43,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
     const [currentQuote, setCurrentQuote] = useState<jupiterQuoteInterface>()
 
     const verifyBuyAndSellTokenAddress = (): boolean => {
-        if ((sellTokenAddress == buyTokenAddress) && sellTokenAddress && buyTokenAddress) {
+        if ((sellTokenAddress === buyTokenAddress) && sellTokenAddress && buyTokenAddress) {
             toast("Buy token and sell token can not be same. Please select distinct tokens");
             return false;
         }
@@ -53,6 +53,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
         if (!verifyBuyAndSellTokenAddress()) return;
         if (sellTokenAmount == 0 || !sellTokenAmount) {
             dispatch(setBuyTokenAmount(0));
+            dispatch(setSellTokenAmount(0));
             dispatch(setSellTokenPrice(0));
             dispatch(setBuyTokenPrice(0));
             return;
@@ -88,16 +89,13 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
         dispatch(setBuyTokenAddress(address));
     }
 
-    const handleTokenExchange = () => {
+    const handleTokenExchange = async () => {
         const currentBuyToken = buyTokenAddress;
         const currentSellToken = sellTokenAddress;
 
         dispatch(setBuyTokenAddress(currentSellToken));
         dispatch(setSellTokenAddress(currentBuyToken));
 
-        const currentSellAmount = sellTokenAmount;
-        dispatch(setSellTokenAmount(buyTokenAmount));
-        dispatch(setBuyTokenAmount(currentSellAmount));
     }
     const handleTokenSwap = async () => {
         if (!verifyBuyAndSellTokenAddress()) return;
@@ -179,6 +177,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                         <div className='flex items-center rounded-md w-full'>
                             <Input type="text" placeholder="0" className='[&&]:text-4xl px-0 [&&]:h-fit [&&]:!border-none [&&]:!outline-none [&&]:!ring-0 [&&]:!focus-visible:ring-0 [&&]:!focus-visible:border-none [&&]:!focus-visible:outline-none'
                                 inputMode="numeric"
+                                value={sellTokenAmount}
                                 pattern="[0-9]*"
                                 onChange={(e) => {
                                     const val = e.target.value;
