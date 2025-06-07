@@ -18,7 +18,7 @@ export default function Home() {
   console.error = (...args) => {
     const isWalletReject =
       args[0] instanceof Error &&
-      (args[0].name === "WalletConnectionError" || args[0].name === "WalletDisconnectionError") ||
+      (args[0].name === "WalletConnectionError" || args[0].name === "WalletDisconnectionError") || args[0].name === "WalletSendTransactionError"
       args[0].message === "User rejected the request.";
 
     if (isWalletReject) {

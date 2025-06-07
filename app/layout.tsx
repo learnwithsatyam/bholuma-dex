@@ -30,7 +30,7 @@ export default function RootLayout({
       <head>
         <link
           rel="icon"
-          href="/BholumaIcon.png"
+          href="/bholumaIcon.png"
           type="image/png"
         />
       </head>
