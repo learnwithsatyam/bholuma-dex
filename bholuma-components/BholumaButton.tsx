@@ -44,7 +44,7 @@ export function BholumaButton({
         </>
       ) : (
         <>
-          {icon && <span className="mr-2">{icon}</span>}
+          {icon && <span className="">{icon}</span>}
           {children}
         </>
       )}

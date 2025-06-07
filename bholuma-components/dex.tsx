@@ -21,6 +21,7 @@ import { createSwapTransaction } from '@/bl/swapTokens'
 import { jupiterSwapTransactionResponseInterface } from '@/interfaces/jupiterSwapTransactionResponseInterface'
 import { toast } from 'sonner'
 import { BholumaButton } from './BholumaButton'
+import { ArrowUpDown } from 'lucide-react'
 
 function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
 
@@ -41,7 +42,15 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
 
     const [currentQuote, setCurrentQuote] = useState<jupiterQuoteInterface>()
 
+    const verifyBuyAndSellTokenAddress = (): boolean => {
+        if ((sellTokenAddress == buyTokenAddress) && sellTokenAddress && buyTokenAddress) {
+            toast("Buy token and sell token can not be same. Please select distinct tokens");
+            return false;
+        }
+        return true;
+    }
     const getCurrentQuote = async () => {
+        if (!verifyBuyAndSellTokenAddress()) return;
         if (sellTokenAmount == 0 || !sellTokenAmount) {
             dispatch(setBuyTokenAmount(0));
             dispatch(setSellTokenPrice(0));
@@ -79,14 +88,26 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
         dispatch(setBuyTokenAddress(address));
     }
 
+    const handleTokenExchange = () => {
+        const currentBuyToken = buyTokenAddress;
+        const currentSellToken = sellTokenAddress;
 
+        dispatch(setBuyTokenAddress(currentSellToken));
+        dispatch(setSellTokenAddress(currentBuyToken));
+
+        const currentSellAmount = sellTokenAmount;
+        dispatch(setSellTokenAmount(buyTokenAmount));
+        dispatch(setBuyTokenAmount(currentSellAmount));
+    }
     const handleTokenSwap = async () => {
-        if(!sellTokenAddress || !buyTokenAddress) {
+        if (!verifyBuyAndSellTokenAddress()) return;
+
+        if (!sellTokenAddress || !buyTokenAddress) {
             toast.error("Please select the sell and buy tokens first.");
             return;
         }
 
-        if(sellTokenAmount<=0){
+        if (sellTokenAmount <= 0) {
             toast.error("Please enter the amount to sell.")
             return;
         }
@@ -126,7 +147,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                 signature: signature
             }, "finalized");
 
-            if(result.value.err){
+            if (result.value.err) {
                 toast.error(`Something went wrong: ${result.value.err}`)
                 return;
             }
@@ -141,14 +162,16 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
             }
         }
     }
-        useEffect(() => {
-            getCurrentQuote(); // Clean up on unmount
-        }, [sellTokenAmount, sellTokenAddress, buyTokenAddress]);
+    useEffect(() => {
+        getCurrentQuote(); // Clean up on unmount
+    }, [sellTokenAmount, sellTokenAddress, buyTokenAddress]);
 
-        return (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <h1 className="text-4xl font-bold text-center text-white mb-4">Welcome to <br /> Bholuma Dex</h1>
-                <div className="text-lg text-gray-300 bg-zinc-950 space-y-2 p-2 rounded-xl shadow-lg">
+    return (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <h1 className="text-4xl font-bold text-center text-white mb-4">Welcome to <br /> Bholuma Dex</h1>
+            <div className="text-lg text-gray-300 bg-zinc-950 space-y-2 p-2 rounded-xl shadow-lg">
+                <div>
+                    <BholumaButton className='absolute top-1/2 left-1/2 transform -translate-x-1/2 border-black border-1 text-center' onClick={handleTokenExchange} icon={<ArrowUpDown />} />
                     <div className='grid grid-rows-[auto_1fr_auto] items-center justify-items-center bg-black rounded-md px-2 py-2 space-y-4 min-h-30 min-w-120'>
                         <Label className="text-slate-500 text-left text-sm w-full">
                             SELL
@@ -165,7 +188,11 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                                         e.target.value = ''; // reset input if invalid
                                     }
                                 }} />
-                            <TokenSelector tokens={tokens ?? []} address={sellTokenAddress} setAddress={changeSellTokenAddress} />
+                            <TokenSelector
+                                tokens={tokens}
+                                address={sellTokenAddress}
+                                setAddress={changeSellTokenAddress}
+                            />
                         </div>
                         <Label className="text-slate-500 text-left text-sm w-full">
                             ${sellTokenPrice}
@@ -181,27 +208,32 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                                 pattern="[0-9]*"
                                 value={buyTokenAmount}
                             />
-                            <TokenSelector tokens={tokens ?? []} address={buyTokenAddress} setAddress={changeBuyTokenAddress} />
+                            <TokenSelector
+                                tokens={tokens}
+                                address={buyTokenAddress}
+                                setAddress={changeBuyTokenAddress}
+                            />
                         </div>
                         <Label className="text-slate-500 text-left text-sm w-full">
                             ${buyTokenPrice}
                         </Label>
                     </div>
-                    {publicKey ?
-                        <div className='flex items-center w-full space-x-2 px-2 justify-center'>
-                            <BholumaButton className="bg-orange-600 hover:bg-orange-700 text-white w-1/2 font-bold py-2 px-4 rounded-md p-6" onClick={handleTokenSwap}>
-                                Swap
-                            </BholumaButton>
-                            <Button className="bg-gray-600 hover:bg-gray-700 text-white w-1/2 font-bold py-2 px-4 rounded-md p-6" onClick={disconnect}>
-                                Disconnect
-                            </Button>
-                        </div>
-                        :
-                        <ConnectWallet />
-                    }
                 </div>
+                {publicKey ?
+                    <div className='flex items-center w-full space-x-2 px-2 justify-center'>
+                        <BholumaButton className="bg-orange-600 hover:bg-orange-700 text-white w-1/2 font-bold py-2 px-4 rounded-md p-6" onClick={handleTokenSwap}>
+                            Swap
+                        </BholumaButton>
+                        <Button className="bg-gray-600 hover:bg-gray-700 text-white w-1/2 font-bold py-2 px-4 rounded-md p-6" onClick={disconnect}>
+                            Disconnect
+                        </Button>
+                    </div>
+                    :
+                    <ConnectWallet />
+                }
             </div>
-        )
-    }
+        </div>
+    )
+}
 
-    export default Dex
+export default Dex
