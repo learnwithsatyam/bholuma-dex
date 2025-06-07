@@ -9,7 +9,6 @@ function FloatingImageCard({
   left,
   animationDuration,
   width,
-  blur = 20
 }: {
   imageUrl: string;
   alt: string;
@@ -17,12 +16,13 @@ function FloatingImageCard({
   left: number;
   animationDuration: number;
   width: number;
-  blur?: number;
 }) {
   const [delay, setDelay] = useState<string | null>(null);
+  const [blur, setBlur] = useState<string | null>(null);
 
   useEffect(() => {
     setDelay(`${Math.random() * 5}s`);
+    setBlur(`${Math.random() * 20}`);
   }, []);
 
   if (!imageUrl || delay === null) return null;
