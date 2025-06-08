@@ -18,7 +18,7 @@ export const Navbar = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
-                    <Image src="/BholumaIcon.png" alt="Bholuma" width={32} height={32} />
+                    <Image src="/bholumaIcon.png" alt="Bholuma" width={32} height={32} />
                     <span className="text-xl font-bold text-white">Bholuma DEX</span>
                 </Link>
 
