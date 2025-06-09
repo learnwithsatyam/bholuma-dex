@@ -39,14 +39,14 @@ function TokenSelector({
     )
 
     return (
-        <div className="dark">
+        <div className="dark w-[200px]">
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-[200px] justify-between text-lg"
+                        className="w-full max-w-[220px] justify-between text-base sm:text-lg"
                     >
                         {selectedToken?.logoURI && (
                             <img
@@ -58,13 +58,21 @@ function TokenSelector({
                             />
                         )}
                         {selectedToken?.symbol || "Select token..."}
-                        <ChevronsUpDown className="opacity-50" />
+                        <ChevronsUpDown className="opacity-50 ml-auto" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0 dark">
+
+                <PopoverContent
+                    side="bottom"
+                    align="start"
+                    className="w-full max-w-[220px] p-0 z-50 dark border border-muted"
+                >
                     <Command>
-                        <CommandInput placeholder="Search token..." className="h-9" />
-                        <CommandList>
+                        <CommandInput
+                            placeholder="Search token..."
+                            className="h-9 px-2 text-sm"
+                        />
+                        <CommandList className="max-h-[200px] overflow-auto">
                             <CommandEmpty>No token found.</CommandEmpty>
                             <CommandGroup>
                                 {tokens.map((token) => (
@@ -72,18 +80,16 @@ function TokenSelector({
                                         key={token.address}
                                         value={token.address}
                                         onSelect={(currentValue) => {
-                                            setValue(currentValue)
-                                            setAddress(currentValue)
-                                            setOpen(false)
+                                            setValue(currentValue);
+                                            setAddress(currentValue);
+                                            setOpen(false);
                                         }}
                                     >
                                         {token.symbol}
                                         <Check
                                             className={cn(
                                                 "ml-auto",
-                                                value === token.address
-                                                    ? "opacity-100"
-                                                    : "opacity-0"
+                                                value === token.address ? "opacity-100" : "opacity-0"
                                             )}
                                         />
                                     </CommandItem>
@@ -94,6 +100,7 @@ function TokenSelector({
                 </PopoverContent>
             </Popover>
         </div>
+
     )
 }
 
