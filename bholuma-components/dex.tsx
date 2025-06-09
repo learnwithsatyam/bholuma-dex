@@ -165,12 +165,12 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
     }, [sellTokenAmount, sellTokenAddress, buyTokenAddress]);
 
     return (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-full md:max-w-auto md:mx-0">
             <h1 className="text-4xl font-bold text-center text-white mb-4">Welcome to <br /> Bholuma Dex</h1>
             <div className="text-lg text-gray-300 bg-zinc-950 space-y-2 p-2 rounded-xl shadow-lg">
                 <div>
                     <BholumaButton className='absolute top-1/2 left-1/2 transform -translate-x-1/2 border-black border-1 text-center' onClick={handleTokenExchange} icon={<ArrowUpDown />} />
-                    <div className='grid grid-rows-[auto_1fr_auto] items-center justify-items-center bg-black rounded-md px-2 py-2 space-y-4 min-h-30 min-w-120'>
+                    <div className='grid grid-rows-[auto_1fr_auto] items-center justify-items-center bg-black rounded-md px-2 py-2 space-y-4 min-h-30 min-w-90 md:min-w-120'>
                         <Label className="text-slate-500 text-left text-sm w-full">
                             SELL
                         </Label>
@@ -197,7 +197,7 @@ function Dex({ tokens }: { tokens: SolanaTokenInterface[] }) {
                             ${sellTokenPrice}
                         </Label>
                     </div>
-                    <div className='grid grid-rows-[auto_1fr_auto] items-center justify-items-center px-2 py-2 bg-gray-800 rounded-md space-y-4 min-h-30 min-w-120'>
+                    <div className='grid grid-rows-[auto_1fr_auto] items-center justify-items-center px-2 py-2 bg-gray-800 rounded-md space-y-4 min-h-30 min-w-90 md:min-w-120'>
                         <Label className="text-slate-500 text-left text-sm w-full">
                             BUY
                         </Label>
